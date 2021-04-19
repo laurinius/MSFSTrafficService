@@ -17,6 +17,9 @@ Return status information:
 * status.installed [boolean]: If the service is installed and running. At the moment always `true` when reachable.
 * status.connected [boolean]: `true` if a SimConnect connection could be established, otherwise `false`.
 
+### /ready
+Simplified check that returns `true` when ready and a SimConnect connection could be established, `false` otherwise.
+
 ### /traffic
 Returns a list of simulator traffic.
 ```json

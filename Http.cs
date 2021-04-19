@@ -12,9 +12,9 @@ namespace TrafficService
     class Http
     {
         private HttpListener listener;
-        private RequestHandler requestHandler;
-        private CancellationToken cancellationToken;
-        private CancellationTokenSource cancellationTokenSource;
+        private readonly RequestHandler requestHandler;
+        private readonly CancellationToken cancellationToken;
+        private readonly CancellationTokenSource cancellationTokenSource;
 
         public delegate void RequestHandler(HttpListenerContext context);
 

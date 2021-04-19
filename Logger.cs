@@ -19,11 +19,9 @@ namespace TrafficService
         {
             try
             {
-                using (StreamWriter w = File.AppendText("app.log"))
-                {
-                    w.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff: ") + msg);
-                    Debug.WriteLine(msg);
-                }
+                using StreamWriter w = File.AppendText("app.log");
+                w.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff: ") + msg);
+                Debug.WriteLine(msg);
             }
             catch (Exception e)
             {

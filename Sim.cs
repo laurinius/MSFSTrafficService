@@ -104,7 +104,7 @@ namespace TrafficService
                 Struct1 s1 = (Struct1)data.dwData[0];
                 uint id = data.dwObjectID;
 
-                if (id != 1) // Exclude user aircraft
+                if ((s1.latitude != 0 || s1.longitude != 0 || s1.altitude != 0) && id != 1) // exclude user aircraft and "ghost" aircraft
                 {
                     aircraftData.Add(id, s1);
                 }

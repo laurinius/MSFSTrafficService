@@ -31,6 +31,9 @@ namespace TrafficService
                     case "check":
                         ProcessCheckRequest(context);
                         break;
+                    case "ready":
+                        ProcessReadyRequest(context);
+                        break;
                     case "traffic":
                         ProcessTrafficRequest(context);
                         break;
@@ -53,6 +56,11 @@ namespace TrafficService
             sb.Append('}');
             sb.Append('}');
             JsonResponse(context, sb.ToString(), 200);
+        }
+
+        private void ProcessReadyRequest(HttpListenerContext context)
+        {
+            JsonResponse(context, sim.Connect().ToString().ToLower(), 200);
         }
 
         private void ProcessDefaultRequest(HttpListenerContext context)

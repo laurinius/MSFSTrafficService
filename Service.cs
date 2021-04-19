@@ -93,7 +93,7 @@ namespace TrafficService
                     sb.Append("\"uId\":").Append(entry.Key).Append(",");
                     sb.Append("\"lat\":").Append(entry.Value.latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)).Append(',');
                     sb.Append("\"lon\":").Append(entry.Value.longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)).Append(',');
-                    sb.Append("\"alt\":").Append(((entry.Value.altitude - 10000) * 0.3048).ToString(System.Globalization.CultureInfo.InvariantCulture)).Append(',');
+                    sb.Append("\"alt\":").Append((entry.Value.altitude * 0.3048).ToString(System.Globalization.CultureInfo.InvariantCulture)).Append(',');
                     sb.Append("\"heading\":").Append(entry.Value.heading.ToString(System.Globalization.CultureInfo.InvariantCulture));
                     sb.Append('}');
                     sep = ",";

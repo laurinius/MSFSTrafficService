@@ -104,17 +104,10 @@ namespace TrafficService
                 Struct1 s1 = (Struct1)data.dwData[0];
                 uint id = data.dwObjectID;
 
-                if (id != 0 && id != 1) // Exclude user aircraft
+                if (id != 1) // Exclude user aircraft
                 {
                     aircraftData.Add(id, s1);
                 }
-
-                //Debug.WriteLine("Title: " + s1.title);
-                //Debug.WriteLine("ID:    " + id);
-                //Debug.WriteLine("Lat:   " + s1.latitude);
-                //Debug.WriteLine("Lon:   " + s1.longitude);
-                //Debug.WriteLine("Alt:   " + s1.altitude);
-                //Debug.WriteLine("HDG:   " + s1.heading);
 
                 if (data.dwentrynumber == data.dwoutof)
                 {
@@ -146,18 +139,25 @@ namespace TrafficService
                 return null;
             }
             Dictionary<uint, Struct1> result = null;
+            var cts = new CancellationTokenSource(2000);
             try
             {
                 processed = new TaskCompletionSource<Dictionary<uint, Struct1>>();
+                CancellationToken ct = cts.Token;
+                ct.Register(() => processed.TrySetCanceled());
                 Task.Run(async () => {
                     simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, MAXIMUM_RADIUS, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
                     await processed.Task;
                 }).Wait(); 
                 result = processed.Task.Result;
+            } catch (Exception e)
+            {
+                Logger.Log("Execution exception: " + e.Message);
             }
             finally
             {
                 processed = null;
+                cts.Dispose();
             }
             return result;
         }

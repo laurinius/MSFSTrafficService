@@ -9,7 +9,7 @@ Return status information:
     {
       "version":"0.1.0",
       "installed":true,
-      "connected":false
+      "connected":true
     }
 }
 ```

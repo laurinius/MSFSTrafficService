@@ -6,7 +6,9 @@ This is small app that connects to MSFS via SimConnect and provides a Web-API to
 The app will try to establish the SimConnect connection automatically, but the user can start and stop the inbuild webserver for the API manually.  
 An option to automatically start the webserver with the app is also available and active by default.
 
-The structure of the JSON response containing the aircraft data matches the structure of the data that is available from `Coherent.call("GET_AIR_TRAFFIC")` in the MSFS JavaScript facilities, though that call is limited to only the inbuilt "Live"-traffic, this app also provides traffic from Offline-AI and injected traffic.
+The structure of the JSON response containing the aircraft data matches the structure of the data that is available from `Coherent.call("GET_AIR_TRAFFIC")` in the MSFS JavaScript facilities, though that call is limited to only the inbuilt "Live"-traffic, this app also provides traffic from **injected multiplayer traffic** (e.g. VatSim via vPilot) and **Offline-AI traffic**.
+
+**Inbuilt-Multiplayer traffic is not supported at the moment.** The data needed for that is not exposed via SimConnect.
 
 ## API
 ### GET /status /check

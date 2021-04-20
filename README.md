@@ -11,8 +11,8 @@ The structure of the JSON response containing the aircraft data matches the stru
 **Inbuilt-Multiplayer traffic is not supported at the moment.** The data needed for that is not exposed via SimConnect.
 
 ## Add-On integration
-The service can be integrated into HTML/JavaScript addons by calling the web API.
-See this example for details:
+The service can be integrated into HTML/JavaScript addons by calling the web API.  
+See this example on how to call the API from JavaScript:
 ```javascript
 class ExternalTraffic {
     constructor(port = 8383) {

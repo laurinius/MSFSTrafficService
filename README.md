@@ -10,6 +10,87 @@ The structure of the JSON response containing the aircraft data matches the stru
 
 **Inbuilt-Multiplayer traffic is not supported at the moment.** The data needed for that is not exposed via SimConnect.
 
+## Add-On integration
+The service can be integrated into HTML/JavaScript addons by calling the web API.
+See this example for details:
+```javascript
+class ExternalTraffic {
+    constructor(port = 8383) {
+        this.port = port;
+        this.timeout = 1000;
+    }
+
+    callAvailable() {
+        return this.request(this.getUrl("/status"), this.timeout).then(
+            json => json.status.connected === true,
+            () => false
+        );
+    }
+    
+    callTraffic() {
+        return this.request(this.getUrl("/traffic"), this.timeout).then(
+            json => json,
+            () => []
+        );
+    }
+    
+    getUrl(path) {
+        return "http://localhost:" + this.port + path;
+    }
+
+    request(url, timeout) {
+        return new Promise((resolve, reject) => {
+            let httpRequest = new XMLHttpRequest();
+            httpRequest.timeout = timeout;
+            httpRequest.onload = function() {
+                try {
+                    const json = JSON.parse(this.responseText);
+                    resolve(json);
+                } catch (e) {
+                    reject();
+                }
+            };
+            httpRequest.onerror = function() {
+                reject();
+            };
+            httpRequest.ontimeout = function() {
+                reject();
+            };
+            httpRequest.open('GET', url);
+            httpRequest.send(null);
+        });
+    }
+}
+
+let externalTraffic = new ExternalTraffic();
+let externalTrafficAvailable = false;
+
+// Check availability every 10 seconds
+let checkAvailability = () => {
+	externalTraffic.callAvailable().then(isAvailable => {
+		externalTrafficAvailable = isAvailable;
+	});
+};
+checkAvailability();
+setInterval(checkAvailability, 10000);
+
+// Process traffic every second
+setInterval(() => {
+	if (externalTrafficAvailable) 
+		externalTraffic.callTraffic().then(trafficArray => {
+			for (let i = 0; i < trafficArray.length; i++) {
+				let aircraft = trafficArray[i];
+				let id = aircraft.id;
+				let lat = aircraft.lat;
+				let lon = aircraft.lon;
+				let alt = aircraft.alt;
+				let heading = aircraft.heading;
+				// Do something
+			}
+		});
+	}, 1000);
+```
+
 ## API
 ### GET /status /check
 Return status information:
@@ -31,7 +112,8 @@ Return status information:
 Simplified check that returns `true` when ready and a SimConnect connection could be established, `false` otherwise.
 
 ### GET /traffic
-Returns a list of simulator traffic.
+Returns an array of simulator traffic.
+Returns an empty array in error cases (e.g. if traffic could not be retreived via SimConnect).
 ```json
 [
   {

@@ -129,4 +129,4 @@ Returns an empty array in error cases (e.g. if traffic could not be retreived vi
 * lat [double]: The latitude of the traffic object.
 * lon [double]: The longitude of the traffic object.
 * alt [double]: The altitude in meters MSL of the traffic object.
-* heading [double]: The heading of the traffic object.
+* heading [double]: The heading (degrees true) of the traffic object.

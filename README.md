@@ -10,12 +10,12 @@ The structure of the JSON response containing the aircraft data matches the stru
 
 **Inbuilt-Multiplayer traffic is not supported at the moment.** The data needed for that is not exposed via SimConnect.
 
-## Known Issues
-* There can be issues when the app is running multiple times at the same time, including sim crashes. Make sure you don't have it already running (check tray if you minimize to tray) before starting. Im looking into preventing a consecutive start.
-
 ## Usage
 Download and unzip the latest release [here](https://github.com/laurinius/MSFSTrafficService/releases/latest) and run `MSFSTrafficService.exe`.  
 The webservice starts automatically with the app by default, but this can be disabled with the Auto-Run checkbox.
+
+## Known Issues
+* Fixed in 0.1.2 ~There can be issues when the app is running multiple times at the same time, including sim crashes. Make sure you don't have it already running (check tray if you minimize to tray) before starting. Im looking into preventing a consecutive start.~
 
 ## Add-On integration
 The service can be integrated into HTML/JavaScript addons by calling the web API.  

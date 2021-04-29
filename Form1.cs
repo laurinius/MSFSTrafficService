@@ -27,7 +27,7 @@ namespace TrafficService
         private readonly Sim sim;
         private readonly Service service;
         private Http http = null;
-        private const string version = "0.1.2";
+        private const string version = "0.1.3-SNAPSHOT";
 
         protected override void DefWndProc(ref Message m)
         {
@@ -35,7 +35,14 @@ namespace TrafficService
             {
                 if (sim.SimConnect != null)
                 {
-                    sim.SimConnect.ReceiveMessage();
+                    try
+                    {
+                        sim.SimConnect.ReceiveMessage();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Log("SimConnect receive failed: " + e.Message);
+                    }
                 }
             }
             else

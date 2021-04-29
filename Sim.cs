@@ -132,64 +132,77 @@ namespace TrafficService
             Logger.Log("Exception received: " + data.dwException);
         }
 
+        private readonly object trafficLock = new object();
         public Dictionary<uint, Struct1> GetTraffic()
         {
-            if (!Connect())
+            lock (trafficLock)
             {
-                return null;
+                if (!Connect())
+                {
+                    return null;
+                }
+                Dictionary<uint, Struct1> result = null;
+                var cts = new CancellationTokenSource(2000);
+                try
+                {
+                    processed = new TaskCompletionSource<Dictionary<uint, Struct1>>();
+                    CancellationToken ct = cts.Token;
+                    ct.Register(() => processed.TrySetCanceled());
+                    Task.Run(async () =>
+                    {
+                        simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, MAXIMUM_RADIUS, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
+                        await processed.Task;
+                    }).Wait();
+                    result = processed.Task.Result;
+                }
+                catch (Exception e)
+                {
+                    Logger.Log("Execution exception: " + e.Message);
+                }
+                finally
+                {
+                    processed = null;
+                    cts.Dispose();
+                }
+                return result;
             }
-            Dictionary<uint, Struct1> result = null;
-            var cts = new CancellationTokenSource(2000);
-            try
-            {
-                processed = new TaskCompletionSource<Dictionary<uint, Struct1>>();
-                CancellationToken ct = cts.Token;
-                ct.Register(() => processed.TrySetCanceled());
-                Task.Run(async () => {
-                    simconnect.RequestDataOnSimObjectType(DATA_REQUESTS.REQUEST_1, DEFINITIONS.Struct1, MAXIMUM_RADIUS, SIMCONNECT_SIMOBJECT_TYPE.AIRCRAFT);
-                    await processed.Task;
-                }).Wait(); 
-                result = processed.Task.Result;
-            } catch (Exception e)
-            {
-                Logger.Log("Execution exception: " + e.Message);
-            }
-            finally
-            {
-                processed = null;
-                cts.Dispose();
-            }
-            return result;
         }
 
+        private readonly object connectionLock = new object();
         public bool Connect()
         {
-            if (simconnect != null)
+            lock (connectionLock)
             {
-                return true;
-            }
-            try
-            {
-                simconnect = new SimConnect("Managed Data Request", this.handle, WM_USER_SIMCONNECT, null, 0);
-                InitDataRequest();
-                Logger.Log("SimConnect connected successfully.");
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Log("Exception connecting SimConnect: " + e.Message);
-                CloseConnection();
-                return false;
+                if (simconnect != null)
+                {
+                    return true;
+                }
+                try
+                {
+                    simconnect = new SimConnect("Managed Data Request", this.handle, WM_USER_SIMCONNECT, null, 0);
+                    InitDataRequest();
+                    Logger.Log("SimConnect connected successfully.");
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Logger.Log("Exception connecting SimConnect: " + e.Message);
+                    CloseConnection();
+                    return false;
+                }
             }
         }
 
         public void CloseConnection()
         {
-            if (simconnect != null)
+            lock (connectionLock)
             {
-                simconnect.Dispose();
-                simconnect = null;
-                Logger.Log("SimConnect connection closed.");
+                if (simconnect != null)
+                {
+                    simconnect.Dispose();
+                    simconnect = null;
+                    Logger.Log("SimConnect connection closed.");
+                }
             }
         }
     }

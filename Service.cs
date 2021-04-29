@@ -83,8 +83,23 @@ namespace TrafficService
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(json);
             response.ContentLength64 = buffer.Length;
             System.IO.Stream output = response.OutputStream;
-            output.Write(buffer, 0, buffer.Length);
-            output.Close();
+            try {
+                output.Write(buffer, 0, buffer.Length);
+            } catch (Exception)
+            {
+                // HTTP Connection issue.
+            }
+            finally
+            {
+                try
+                {
+                    output.Close();
+                }
+                catch (Exception)
+                {
+                    // HTTP Connection issue.
+                }
+            }
         }
 
         private static string ToJson(Dictionary<uint, Sim.Struct1> aircrafts)

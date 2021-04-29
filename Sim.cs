@@ -132,11 +132,18 @@ namespace TrafficService
             Logger.Log("Exception received: " + data.dwException);
         }
 
+        private Dictionary<uint, Struct1> cachedResult = null;
+        private DateTime? cacheTime = null;
         private readonly object trafficLock = new object();
-        public Dictionary<uint, Struct1> GetTraffic()
+        public Dictionary<uint, Struct1> GetTraffic(bool useCache = true)
         {
             lock (trafficLock)
             {
+                if (useCache && cachedResult != null && cacheTime != null && (DateTime.Now - cacheTime).Value.TotalMilliseconds < 1000)
+                {
+                    Logger.Log("Result from Cache.");
+                    return cachedResult;
+                }
                 if (!Connect())
                 {
                     return null;
@@ -154,6 +161,11 @@ namespace TrafficService
                         await processed.Task;
                     }).Wait();
                     result = processed.Task.Result;
+                    if (useCache)
+                    {
+                        cacheTime = DateTime.Now;
+                        cachedResult = result;
+                    }
                 }
                 catch (Exception e)
                 {
@@ -164,6 +176,7 @@ namespace TrafficService
                     processed = null;
                     cts.Dispose();
                 }
+                Logger.Log("Result from SimConnect.");
                 return result;
             }
         }

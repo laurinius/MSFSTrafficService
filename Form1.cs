@@ -118,6 +118,7 @@ namespace TrafficService
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Logger.Log("Version: " + version);
             notifyIcon.Icon = new Icon(this.Icon, 40, 40);
             portTextBox.Text = ((int)Properties.Settings.Default["HttpPort"]).ToString();
             bool autoStart = (bool)Properties.Settings.Default["AutoStart"];

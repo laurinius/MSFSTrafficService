@@ -16,7 +16,8 @@ The webservice starts automatically with the app by default, but this can be dis
 
 Since version 0.2.0 there is a configurable cache time. When the last SimConnect is younger than the cache time, that result will be return and no call to SimConnect will be performed.  
 The default of 50ms (20 requests per second) should be sufficient for most use cases while preventing an unreasonable load on the SimConnect API, as non-stop calling that API for traffic information can result in a performance loss in the sim.  
-Ideally the caller of the service should limit the requests to what is necessary for its functionality, but this setting gives the user an option to control the amount of SimConnect requests passed through the service.
+Ideally the caller of the service should limit the requests to what is necessary for its functionality, but this setting gives the user an option to control the amount of SimConnect requests passed through the service.  
+Setting the time to 0ms disables the cache.
 
 ## Known Issues
 * ---

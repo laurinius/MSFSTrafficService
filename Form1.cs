@@ -27,7 +27,7 @@ namespace TrafficService
         private readonly Sim sim;
         private readonly Service service;
         private Http http = null;
-        private const string version = "0.2.0-SNAPSHOT";
+        private const string version = "0.2.0";
 
         protected override void DefWndProc(ref Message m)
         {

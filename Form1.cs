@@ -20,14 +20,14 @@ namespace TrafficService
         public Form1()
         {
             InitializeComponent();
-            sim = new Sim(this.Handle);
+            sim = new Sim(this.Handle, (int)Properties.Settings.Default["CacheTime"]);
             service = new Service(sim, version);
         }
 
         private readonly Sim sim;
         private readonly Service service;
         private Http http = null;
-        private const string version = "0.1.3-SNAPSHOT";
+        private const string version = "0.2.0-SNAPSHOT";
 
         protected override void DefWndProc(ref Message m)
         {
@@ -121,6 +121,7 @@ namespace TrafficService
             Logger.Log("Version: " + version);
             notifyIcon.Icon = new Icon(this.Icon, 40, 40);
             portTextBox.Text = ((int)Properties.Settings.Default["HttpPort"]).ToString();
+            cacheTimeTextBox.Text = sim.CacheTime.ToString();
             bool autoStart = (bool)Properties.Settings.Default["AutoStart"];
             autoStartCheckBox.Checked = autoStart;
             startMinimizedCheckBox.Checked = (bool)Properties.Settings.Default["StartMinimized"];
@@ -171,6 +172,21 @@ namespace TrafficService
             {
                 this.WindowState = FormWindowState.Minimized;
             }
+        }
+
+        private void CacheTimeTextBox_TextChanged(object sender, EventArgs e)
+        {
+            if (cacheTimeTextBox.Text == "")
+            {
+                cacheTimeTextBox.Text = "0";
+            }
+            if (int.TryParse(cacheTimeTextBox.Text, out int result))
+            {
+                sim.CacheTime = result;
+                Properties.Settings.Default["CacheTime"] = result;
+                Properties.Settings.Default.Save();
+            }
+            cacheTimeTextBox.Text = sim.CacheTime.ToString();
         }
     }
 }

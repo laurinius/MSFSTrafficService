@@ -38,6 +38,8 @@ namespace TrafficService
             this.minimizeToTrayCheckBox = new System.Windows.Forms.CheckBox();
             this.startMinimizedCheckBox = new System.Windows.Forms.CheckBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.cachingLabel = new System.Windows.Forms.Label();
+            this.cacheTimeTextBox = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // startStopHttpButton
@@ -52,7 +54,7 @@ namespace TrafficService
             // 
             // httpStatusLabel
             // 
-            this.httpStatusLabel.Location = new System.Drawing.Point(12, 88);
+            this.httpStatusLabel.Location = new System.Drawing.Point(12, 113);
             this.httpStatusLabel.Name = "httpStatusLabel";
             this.httpStatusLabel.Size = new System.Drawing.Size(175, 71);
             this.httpStatusLabel.TabIndex = 2;
@@ -115,11 +117,31 @@ namespace TrafficService
             this.notifyIcon.Text = "Traffic Service";
             this.notifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_MouseDoubleClick);
             // 
+            // cachingLabel
+            // 
+            this.cachingLabel.AutoSize = true;
+            this.cachingLabel.Location = new System.Drawing.Point(40, 90);
+            this.cachingLabel.Name = "cachingLabel";
+            this.cachingLabel.Size = new System.Drawing.Size(96, 15);
+            this.cachingLabel.TabIndex = 9;
+            this.cachingLabel.Text = "Cache Time [ms]";
+            // 
+            // cacheTimeTextBox
+            // 
+            this.cacheTimeTextBox.Location = new System.Drawing.Point(142, 87);
+            this.cacheTimeTextBox.Name = "cacheTimeTextBox";
+            this.cacheTimeTextBox.Size = new System.Drawing.Size(45, 23);
+            this.cacheTimeTextBox.TabIndex = 8;
+            this.cacheTimeTextBox.Text = "0";
+            this.cacheTimeTextBox.TextChanged += new System.EventHandler(this.CacheTimeTextBox_TextChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(199, 168);
+            this.ClientSize = new System.Drawing.Size(199, 197);
+            this.Controls.Add(this.cachingLabel);
+            this.Controls.Add(this.cacheTimeTextBox);
             this.Controls.Add(this.startMinimizedCheckBox);
             this.Controls.Add(this.minimizeToTrayCheckBox);
             this.Controls.Add(this.autoStartCheckBox);
@@ -147,6 +169,8 @@ namespace TrafficService
         private System.Windows.Forms.CheckBox minimizeToTrayCheckBox;
         private System.Windows.Forms.CheckBox startMinimizedCheckBox;
         private System.Windows.Forms.NotifyIcon notifyIcon;
+        private System.Windows.Forms.Label cachingLabel;
+        private System.Windows.Forms.TextBox cacheTimeTextBox;
     }
 }
 

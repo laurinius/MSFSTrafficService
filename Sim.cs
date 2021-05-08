@@ -1,23 +1,40 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace TrafficService
 {
     class Sim
     {
-        public Sim(IntPtr handle)
+        public Sim(IntPtr handle, int cacheTime)
         {
             this.handle = handle;
+            CacheTime = cacheTime;
         }
         private readonly IntPtr handle;
+        private int cacheTime;
+        private Dictionary<uint, Struct1> cachedResult = null;
+        private DateTime? cachedResultTimestamp = null;
+        public int CacheTime {
+            get => cacheTime;
+            set {
+                if (value <= 0)
+                {
+                    cacheTime = 0;
+                    cachedResult = null;
+                    cachedResultTimestamp = null;
+                } else if (value > 60000)
+                {
+                    cacheTime = 60000;
+                } else
+                {
+                    cacheTime = value;
+                }
+            }
+        }
 
         private enum DATA_REQUESTS
         {
@@ -51,7 +68,6 @@ namespace TrafficService
                 return simconnect;
             }
         }
-
 
         private void InitDataRequest()
         {
@@ -132,16 +148,13 @@ namespace TrafficService
             Logger.Log("Exception received: " + data.dwException);
         }
 
-        private Dictionary<uint, Struct1> cachedResult = null;
-        private DateTime? cacheTime = null;
         private readonly object trafficLock = new object();
-        public Dictionary<uint, Struct1> GetTraffic(bool useCache = true)
+        public Dictionary<uint, Struct1> GetTraffic()
         {
             lock (trafficLock)
             {
-                if (useCache && cachedResult != null && cacheTime != null && (DateTime.Now - cacheTime).Value.TotalMilliseconds < 1000)
+                if (cacheTime > 0 && cachedResult != null && cachedResultTimestamp != null && (DateTime.Now - cachedResultTimestamp).Value.TotalMilliseconds < cacheTime)
                 {
-                    Logger.Log("Result from Cache.");
                     return cachedResult;
                 }
                 if (!Connect())
@@ -161,9 +174,9 @@ namespace TrafficService
                         await processed.Task;
                     }).Wait();
                     result = processed.Task.Result;
-                    if (useCache)
+                    if (cacheTime > 0)
                     {
-                        cacheTime = DateTime.Now;
+                        cachedResultTimestamp = DateTime.Now;
                         cachedResult = result;
                     }
                 }
@@ -176,7 +189,6 @@ namespace TrafficService
                     processed = null;
                     cts.Dispose();
                 }
-                Logger.Log("Result from SimConnect.");
                 return result;
             }
         }

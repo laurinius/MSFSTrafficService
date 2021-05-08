@@ -70,5 +70,17 @@ namespace TrafficService.Properties {
                 this["MinimizeToTray"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int CacheTime {
+            get {
+                return ((int)(this["CacheTime"]));
+            }
+            set {
+                this["CacheTime"] = value;
+            }
+        }
     }
 }

@@ -1,23 +1,40 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace TrafficService
 {
     class Sim
     {
-        public Sim(IntPtr handle)
+        public Sim(IntPtr handle, int cacheTime)
         {
             this.handle = handle;
+            CacheTime = cacheTime;
         }
         private readonly IntPtr handle;
+        private int cacheTime;
+        private Dictionary<uint, Struct1> cachedResult = null;
+        private DateTime? cachedResultTimestamp = null;
+        public int CacheTime {
+            get => cacheTime;
+            set {
+                if (value <= 0)
+                {
+                    cacheTime = 0;
+                    cachedResult = null;
+                    cachedResultTimestamp = null;
+                } else if (value > 60000)
+                {
+                    cacheTime = 60000;
+                } else
+                {
+                    cacheTime = value;
+                }
+            }
+        }
 
         private enum DATA_REQUESTS
         {
@@ -51,7 +68,6 @@ namespace TrafficService
                 return simconnect;
             }
         }
-
 
         private void InitDataRequest()
         {
@@ -137,6 +153,10 @@ namespace TrafficService
         {
             lock (trafficLock)
             {
+                if (cacheTime > 0 && cachedResult != null && cachedResultTimestamp != null && (DateTime.Now - cachedResultTimestamp).Value.TotalMilliseconds < cacheTime)
+                {
+                    return cachedResult;
+                }
                 if (!Connect())
                 {
                     return null;
@@ -154,6 +174,11 @@ namespace TrafficService
                         await processed.Task;
                     }).Wait();
                     result = processed.Task.Result;
+                    if (cacheTime > 0)
+                    {
+                        cachedResultTimestamp = DateTime.Now;
+                        cachedResult = result;
+                    }
                 }
                 catch (Exception e)
                 {
